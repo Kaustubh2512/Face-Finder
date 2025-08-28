@@ -43,7 +43,7 @@ Face Finder is a Python-based tool for identifying and matching faces in event p
 This project is provided under the MIT License.
 
 ## Author
-- [Your Name]
+- Kaustubh Andure
 
 ## Acknowledgements
 - Uses the [face_recognition](https://github.com/ageitgey/face_recognition) library for face detection and recognition.
