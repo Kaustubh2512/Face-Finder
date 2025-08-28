@@ -1,0 +1,12 @@
+# Core libraries
+numpy
+opencv-python
+pandas
+tqdm
+
+# Face recognition library
+insightface
+onnxruntime
+
+# Optional: If you want faster operations (not mandatory, but recommended)
+onnxruntime-gpu  # Uncomment if you have GPU and compatible CUDA setup
