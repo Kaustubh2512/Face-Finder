@@ -1,49 +1,69 @@
 # Face Finder
 
-Face Finder is a Python-based tool for identifying and matching faces in event photos against a set of known faces. It is designed to automate the process of finding individuals in large collections of images, such as those taken at events.
+Face Finder is a Python-based tool for identifying and matching faces in event photos against a set of known faces. It uses the `insightface` library for high-accuracy face recognition.
 
 ## Features
-- Scans a directory of event photos and compares faces to a directory of known individuals
-- Outputs results to a specified folder
-- Easy to use and configure
+- Scans a directory of event photos and compares faces to a directory of known individuals.
+- Organizes matched photos into folders per person.
+- Generates CSV and JSON reports of all matches.
+- Annotates photos with detected names and confidence scores.
 
-## Folder Structure
-- `face_finder1.py`: Main Python script for face matching
-- `Event Photos/`: Directory containing event images to be scanned
-- `Known/`: Directory containing images of known individuals
-- `output/`: Directory where results and matched images are saved
+## Project Structure
+- `face_finder1.py`: Main CLI script for face matching.
+- `LICENSE`: MIT License.
+- `CONTRIBUTING.md`: Guidelines for contributing.
+- `requirements.txt`: Project dependencies.
 
 ## Requirements
 - Python 3.7+
-- Required Python packages (install with pip):
-  - face_recognition
-  - opencv-python
-  - numpy
+- A compatible C++ compiler (for `insightface` dependencies)
+- Required Python packages:
+  - `insightface`
+  - `onnxruntime` (or `onnxruntime-gpu`)
+  - `opencv-python`
+  - `numpy`
+  - `pandas`
+  - `tqdm`
 
 ## Installation
-1. git clone https://github.com/Kaustubh2512/Face-Finder (Clone this repository).
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/Kaustubh2512/Face-Finder.git
+   cd Face-Finder
+   ```
 2. Install the required packages:
-   cd Face Finder
+   ```bash
    pip install -r requirements.txt
-
+   ```
 
 ## Usage
-1. Place images of known individuals in the `Known/` folder.
-2. Place event photos in the `Event Photos/` folder.
-3. Run the script:
-   ```powershell
-   python face_finder1.py
-   ```
-4. Results will be saved in the `output/` folder.
 
-## Customization
-- You can modify the script to change input/output directories or adjust matching thresholds as needed.
+### 🌐 Web UI (Recommended)
+Run the premium interactive dashboard:
+```bash
+streamlit run app.py
+```
+
+### 💻 Command Line
+Run the script directly via CLI:
+```bash
+python face_finder1.py --known "Known" --photos "Event Photos" --output "output"
+```
+*Note: Use `python face_finder1.py --help` to see all available options.*
+
+3. Results will be saved in the `output/` folder:
+   - `annotated/`: Images with bounding boxes and names.
+   - `per_person/`: Original images sorted into folders by person name.
+   - `reports/`: CSV and JSON files detailing all matches.
+
+## Contributing
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
-This project is provided under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
-- Kaustubh Andure
+- [Kaustubh Andure](https://github.com/Kaustubh2512)
 
 ## Acknowledgements
-- Uses the [face_recognition](https://github.com/ageitgey/face_recognition) library for face detection and recognition.
+- Powered by the [InsightFace](https://github.com/deepinsight/insightface) project.
