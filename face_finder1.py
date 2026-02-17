@@ -97,7 +97,7 @@ def annotate_image(img, faces_info):
     return out
 
 
-def process_event_photos(app, people_embs, photos_dir, out_dir, sim_threshold, min_face):
+def process_event_photos(app, people_embs, photos_dir, out_dir, sim_threshold, min_face, progress_callback=None):
     annotated_dir = out_dir / "annotated"
     per_person_dir = out_dir / "per_person"
     reports_dir = out_dir / "reports"
@@ -109,7 +109,11 @@ def process_event_photos(app, people_embs, photos_dir, out_dir, sim_threshold, m
     summary = {name: [] for name in people_embs.keys()}
 
     files = collect_files(photos_dir)
-    for img_path in tqdm(files, desc="Scanning photos"):
+    total_files = len(files)
+    
+    for i, img_path in enumerate(tqdm(files, desc="Scanning photos")):
+        if progress_callback:
+            progress_callback(i + 1, total_files, str(img_path.name))
         try:
             img = read_image_bgr(img_path)
         except:
@@ -172,29 +176,59 @@ def process_event_photos(app, people_embs, photos_dir, out_dir, sim_threshold, m
 
 
 def main():
-    base_path = Path(r"C:\Projects\FACE FINDER")
-    known_dir = base_path / "Known"
-    photos_dir = base_path / "Event Photos"
-    out_dir = base_path / "output"
+    """
+    Main entry point for the Face Finder CLI.
+    Parses arguments and initiates the face matching process.
+    """
+    parser = argparse.ArgumentParser(description="Face Finder: Match faces in event photos against known individuals.")
+    parser.add_argument("--known", type=str, default="Known", help="Directory containing folders of known individuals")
+    parser.add_argument("--photos", type=str, default="Event Photos", help="Directory containing event photos to scan")
+    parser.add_argument("--output", type=str, default="output", help="Directory to save results")
+    parser.add_argument("--threshold", type=float, default=0.35, help="Cosine similarity threshold (default: 0.35)")
+    parser.add_argument("--det-size", type=int, default=640, help="Detection size for the face model (default: 640)")
+    parser.add_argument("--min-face", type=int, default=60, help="Minimum face size in pixels (default: 60)")
 
-    sim_threshold = 0.35
-    det_size = 640
-    min_face = 60
+    args = parser.parse_args()
+
+    known_dir = Path(args.known)
+    photos_dir = Path(args.photos)
+    out_dir = Path(args.output)
+
+    if not known_dir.exists():
+        print(f"Error: Known directory not found at {known_dir}")
+        return
+    if not photos_dir.exists():
+        print(f"Error: Photos directory not found at {photos_dir}")
+        return
 
     print("Loading face models...")
-    app = load_face_app(det_size=det_size)
+    try:
+        app = load_face_app(det_size=args.det_size)
+    except Exception as e:
+        print(f"Error loading face models: {e}")
+        return
 
     print("Building reference embeddings...")
-    people_embs = build_known_embeddings(app, known_dir, min_size=min_face)
+    people_embs = build_known_embeddings(app, known_dir, min_size=args.min_face)
     if not people_embs:
-        raise SystemExit("No valid reference faces found!")
+        print("No valid reference faces found in the 'Known' directory folders!")
+        return
 
-    print(f"Loaded: {', '.join(people_embs.keys())}")
-    df = process_event_photos(app, people_embs, photos_dir, out_dir, sim_threshold, min_face)
+    print(f"Loaded {len(people_embs)} individuals: {', '.join(people_embs.keys())}")
+    
+    process_event_photos(
+        app, 
+        people_embs, 
+        photos_dir, 
+        out_dir, 
+        args.threshold, 
+        args.min_face
+    )
 
     print("\nDone!")
-    print(f"CSV: {out_dir / 'reports' / 'matches.csv'}")
-    print(f"JSON: {out_dir / 'reports' / 'matches.json'}")
+    print(f"Results saved in: {out_dir}")
+    print(f"CSV Report: {out_dir / 'reports' / 'matches.csv'}")
+    print(f"JSON Report: {out_dir / 'reports' / 'matches.json'}")
 
 
 if __name__ == "__main__":
