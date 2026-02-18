@@ -2,7 +2,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 from pathlib import Path
+from typing import Optional, Callable
 import cv2
 import numpy as np
 from tqdm import tqdm
@@ -51,17 +53,34 @@ def collect_files(root: Path):
     return [p for p in root.rglob("*") if p.is_file() and is_image(p)]
 
 
-def load_face_app(det_size: int = 640):
-    app = FaceAnalysis(name="buffalo_l", providers=["CPUExecutionProvider"])
+def load_face_app(det_size: int = 640, use_gpu: bool = True):
+    providers = ["CPUExecutionProvider"]
+    if use_gpu:
+        providers = ["CUDAExecutionProvider", "CoreMLExecutionProvider"] + providers
+    
+    app = FaceAnalysis(name="buffalo_l", providers=providers)
     app.prepare(ctx_id=0, det_size=(det_size, det_size))
     return app
 
 
 def build_known_embeddings(app: FaceAnalysis, known_dir: Path, min_size: int):
     people = {}
-    for person_dir in sorted(p for p in known_dir.iterdir() if p.is_dir()):
+    entities = sorted(known_dir.iterdir())
+    
+    for item in entities:
         embs = []
-        for img_path in collect_files(person_dir):
+        person_name = ""
+        
+        if item.is_dir():
+            person_name = item.name
+            target_files = collect_files(item)
+        elif item.is_file() and is_image(item):
+            person_name = item.stem
+            target_files = [item]
+        else:
+            continue
+            
+        for img_path in target_files:
             try:
                 img = read_image_bgr(img_path)
                 faces = app.get(img)
@@ -76,12 +95,14 @@ def build_known_embeddings(app: FaceAnalysis, known_dir: Path, min_size: int):
                     embs.append(emb.astype(np.float32))
             except:
                 continue
+                
         if embs:
             mean_emb = np.mean(np.stack(embs, axis=0), axis=0)
             norm = np.linalg.norm(mean_emb)
             if norm > 0:
                 mean_emb = mean_emb / norm
-            people[person_dir.name] = mean_emb.astype(np.float32)
+            people[person_name] = mean_emb.astype(np.float32)
+            
     return people
 
 
@@ -95,6 +116,49 @@ def annotate_image(img, faces_info):
         cv2.rectangle(out, (x1, y_rect), (x1 + tw + 8, y_rect + th + 8), (0, 255, 0), -1)
         cv2.putText(out, label, (x1 + 4, y_rect + th + 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
     return out
+
+
+def process_single_photo(img_path, app, people_embs, sim_threshold, min_face):
+    try:
+        img = read_image_bgr(img_path)
+    except:
+        return None
+
+    faces = app.get(img)
+    face_infos = []
+    matches_in_photo = []
+    
+    for f in faces:
+        x1, y1, x2, y2 = map(int, f.bbox)
+        if (x2 - x1) < min_face or (y2 - y1) < min_face:
+            continue
+        emb = f.embedding
+        if emb is None:
+            continue
+        
+        emb = emb.astype(np.float32)
+        n = np.linalg.norm(emb)
+        if n > 0:
+            emb = emb / n
+
+        best_name = None
+        best_score = -1.0
+        for name, ref_emb in people_embs.items():
+            score = cosine_similarity(emb, ref_emb)
+            if score > best_score:
+                best_score = score
+                best_name = name
+
+        if best_name and best_score >= sim_threshold:
+            face_infos.append(((x1, y1, x2, y2), best_name, best_score))
+            matches_in_photo.append((best_name, best_score))
+
+    return {
+        "path": img_path,
+        "img": img,
+        "face_infos": face_infos,
+        "matches": matches_in_photo
+    }
 
 
 def process_event_photos(app, people_embs, photos_dir, out_dir, sim_threshold, min_face, progress_callback=None):
@@ -114,72 +178,44 @@ def process_event_photos(app, people_embs, photos_dir, out_dir, sim_threshold, m
     for i, img_path in enumerate(tqdm(files, desc="Scanning photos")):
         if progress_callback:
             progress_callback(i + 1, total_files, str(img_path.name))
-        try:
-            img = read_image_bgr(img_path)
-        except:
+        
+        result = process_single_photo(img_path, app, people_embs, sim_threshold, min_face)
+        if not result or not result["matches"]:
             continue
-        faces = app.get(img)
-        face_infos = []
-        matches_in_photo = []
-        for f in faces:
-            x1, y1, x2, y2 = map(int, f.bbox)
-            if (x2 - x1) < min_face or (y2 - y1) < min_face:
-                continue
-            emb = f.embedding
-            if emb is None:
-                continue
-            emb = emb.astype(np.float32)
-            n = np.linalg.norm(emb)
-            if n > 0:
-                emb = emb / n
+            
+        matches_in_photo = result["matches"]
+        img = result["img"]
+        face_infos = result["face_infos"]
+        
+        ann = annotate_image(img, face_infos)
+        ann_path = annotated_dir / (img_path.stem + "_annotated" + img_path.suffix)
+        save_image_bgr(ann_path, ann)
 
-            best_name = None
-            best_score = -1.0
-            for name, ref_emb in people_embs.items():
-                score = cosine_similarity(emb, ref_emb)
-                if score > best_score:
-                    best_score = score
-                    best_name = name
+        for name, score in matches_in_photo:
+            dst = per_person_dir / name / img_path.name
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                shutil.copy2(img_path, dst)
+            except:
+                pass
 
-            if best_name and best_score >= sim_threshold:
-                face_infos.append(((x1, y1, x2, y2), best_name, best_score))
-                matches_in_photo.append((best_name, best_score))
-
-        if matches_in_photo:
-            ann = annotate_image(img, face_infos)
-            ann_path = annotated_dir / (img_path.stem + "_annotated" + img_path.suffix)
-            save_image_bgr(ann_path, ann)
-
-            for name, _ in matches_in_photo:
-                dst = per_person_dir / name / img_path.name
-                dst.parent.mkdir(parents=True, exist_ok=True)
-                try:
-                    dst.write_bytes(Path(img_path).read_bytes())
-                except:
-                    pass
-
-            rows.append({
-                "photo": str(img_path),
-                "annotated": str(ann_path.resolve()),
-                "matches": ",".join(sorted({m[0] for m in matches_in_photo})),
-                "scores": json.dumps({name: float(score) for name, score in matches_in_photo}),
-            })
-            for name, score in matches_in_photo:
-                summary[name].append({"photo": str(img_path), "score": float(score)})
+        rows.append({
+            "photo": str(img_path),
+            "annotated": str(ann_path.resolve()),
+            "matches": ",".join(sorted({m[0] for m in matches_in_photo})),
+            "scores": json.dumps({name: float(score) for name, score in matches_in_photo}),
+        })
+        for name, score in matches_in_photo:
+            summary[name].append({"photo": str(img_path), "score": float(score)})
 
     df = pd.DataFrame(rows)
-    csv_path = reports_dir / "matches.csv"
-    json_path = reports_dir / "matches.json"
-    df.to_csv(csv_path, index=False)
-    json_path.write_text(json.dumps({"matches": summary}, indent=2))
+    if not df.empty:
+        df.to_csv(reports_dir / "matches.csv", index=False)
+        (reports_dir / "matches.json").write_text(json.dumps({"matches": summary}, indent=2))
     return df
 
 
 def main():
-    """
-    Main entry point for the Face Finder CLI.
-    Parses arguments and initiates the face matching process.
-    """
     parser = argparse.ArgumentParser(description="Face Finder: Match faces in event photos against known individuals.")
     parser.add_argument("--known", type=str, default="Known", help="Directory containing folders of known individuals")
     parser.add_argument("--photos", type=str, default="Event Photos", help="Directory containing event photos to scan")
@@ -187,6 +223,7 @@ def main():
     parser.add_argument("--threshold", type=float, default=0.35, help="Cosine similarity threshold (default: 0.35)")
     parser.add_argument("--det-size", type=int, default=640, help="Detection size for the face model (default: 640)")
     parser.add_argument("--min-face", type=int, default=60, help="Minimum face size in pixels (default: 60)")
+    parser.add_argument("--use-gpu", action="store_true", help="Use GPU acceleration if available")
 
     args = parser.parse_args()
 
@@ -203,7 +240,7 @@ def main():
 
     print("Loading face models...")
     try:
-        app = load_face_app(det_size=args.det_size)
+        app = load_face_app(det_size=args.det_size, use_gpu=args.use_gpu)
     except Exception as e:
         print(f"Error loading face models: {e}")
         return
