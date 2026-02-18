@@ -20,6 +20,13 @@ Ensure your Google Drive has the following structure:
 - `Known/`: A folder containing high-quality photos of the people you want to find. (Can be subfolders per person or just named images).
 - `Event_Photos/`: The folder containing all the photos from your event/trek.
 
+#### 💡 If the Event Photos are in a Shared Link:
+If someone shared a drive link with you (and it's not in your Drive):
+1.  Open the Shared Link in your browser.
+2.  Click the **"Add shortcut to Drive"** icon (or right-click the folder > "Organize" > "Add shortcut").
+3.  Choose a location in your **"My Drive"**.
+4.  Now, Colab will be able to "see" those photos as if they were your own!
+
 ## 🏃‍♂️ Running the Tool
 
 1.  **Mount Drive**: Run the first cell and authorize Google Drive access.

@@ -18,6 +18,7 @@ The fastest way to use Face Finder without installing anything on your computer.
 1.  **Open the Notebook**: Upload `Face_Finder_Colab.ipynb` to [Google Colab](https://colab.research.google.com/).
 2.  **Enable GPU**: Go to `Runtime > Change runtime type` and select **T4 GPU**.
 3.  **Mount Drive**: Run the first cell to connect your Google Drive.
+    - *Tip: If the photos are in a shared link, click "Add shortcut to Drive" in your browser first.*
 4.  **Configure & Run**: Update your folder paths and hit "Run All".
 
 ### 📂 How to Share with a Group:
