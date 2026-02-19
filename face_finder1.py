@@ -68,7 +68,13 @@ def read_image_bgr(path: Path) -> np.ndarray:
 
 def save_image_bgr(path: Path, img: np.ndarray) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    ext = path.suffix.lower() or ".jpg"
+    ext = path.suffix.lower()
+    
+    # OpenCV cannot encode HEIC or RAW formats. Force JPG for these result images.
+    if ext not in {".jpg", ".jpeg", ".png", ".bmp", ".webp"}:
+        path = path.with_suffix(".jpg")
+        ext = ".jpg"
+        
     success, buf = cv2.imencode(ext, img)
     if not success:
         raise ValueError(f"Could not encode image: {path}")
