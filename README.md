@@ -17,6 +17,8 @@ If you are running the UI locally and need to select a folder:
 
 ---
 
+![Face Finder Dashboard](docs/images/streamlit_preview.png)
+
 ## ☁️ Running in Google Colab (Recommended)
 The fastest way to use Face Finder without installing anything on your computer.
 

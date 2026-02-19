@@ -9,24 +9,34 @@ This guide explains how to use Face Finder in the cloud to process event photos 
 - Go to [Google Colab](https://colab.research.google.com/).
 - Click **File > Upload notebook** and select the file.
 
+---
+
 ### 2. Enable GPU (Critical for Speed)
-To process 100s of photos in minutes:
-- Go to **Runtime > Change runtime type**.
-- Select **T4 GPU** (or any available GPU).
-- Click **Save**.
+To process 1000s of photos in minutes, you must toggle the GPU:
+1.  Click **Runtime** (in the top menu). 
+2.  Click **Change runtime type**.
+3.  Select **T4 GPU** from the dropdown. 
+    > 🖱️ *Menu -> Runtime -> Change runtime type -> Hardware accelerator -> T4 GPU*
+4.  Click **Save**.
+
+![GPU Setup Guide](docs/images/gpu_setup.png)
+
+---
 
 ### 3. Prepare your Folders
 Ensure your Google Drive has the following structure:
-- `Known/`: A folder containing high-quality photos of the people you want to find. (Can be subfolders per person or just named images).
-- `Event_Photos/`: The folder containing all the photos from your event.
+- `Known/`: Reference photos.
+- `Event_Photos/`: Photos to scan.
 
 #### 💡 How to use a Shared Folder (Shared Link):
-If the photos are in a shared link from someone else, you must add them to your own Drive for Colab to see them:
-1.  **Open the Link**: Open the Google Drive shared link in your browser.
-2.  **Add Shortcut**: 
-    - Click the folder name at the top.
-    - Select **Organize** > **Add shortcut**.
-    - Choose **My Drive** as the destination.
+If the photos are in a shared link, you must add a shortcut to your own Drive:
+1.  **Open the Shared Link** in your browser.
+2.  **Right-Click** the folder name or click the 3 dots.
+3.  Select **Organize** > **Add shortcut**.
+    > 🖱️ *Right-click -> Organize -> Add shortcut -> My Drive*
+4.  Choose **My Drive** as the destination.
+
+![Add Shortcut Guide](docs/images/add_shortcut.png)
 3.  **Confirm**: Go to your [Google Drive](https://drive.google.com/) and verify the folder appears with a small "arrow" icon.
 4.  **Colab Path**: In the notebook, your path will now be `/content/drive/MyDrive/YOUR_SHORTCUT_NAME`.
 
