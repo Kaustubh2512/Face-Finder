@@ -57,9 +57,16 @@ with st.sidebar:
     
     st.divider()
     
-    st.subheader("Model Settings")
+    st.subheader("Performance Settings")
+    fast_mode = st.toggle("Fast Mode", value=False, help="Uses lower resolution detection for 2-3x speedup. Good for clear photos.")
+    use_gpu = st.toggle("Use GPU Acceleration", value=True, help="Use graphics card for 10x speedup (requires compatible hardware).")
+    
+    det_size_val = 320 if fast_mode else 640
+    
+    st.divider()
+    
+    st.subheader("Fine-tuning")
     threshold = st.slider("Match Threshold", 0.0, 1.0, 0.35, 0.05, help="Lower = more matches, Higher = more accurate")
-    det_size = st.selectbox("Detection Size", [320, 640, 1024], index=1, help="Resolution for face detection")
     min_face = st.number_input("Min Face Size (px)", value=60, step=10)
 
     st.divider()
@@ -98,7 +105,7 @@ with tab2:
                 # 1. Load Model
                 if st.session_state.face_app is None:
                     st.write("Loading AI models (InsightFace)...")
-                    st.session_state.face_app = load_face_app(det_size=det_size)
+                    st.session_state.face_app = load_face_app(det_size=det_size_val, use_gpu=use_gpu)
                 
                 # 2. Build Embeddings
                 st.write("Building reference database for known people...")
