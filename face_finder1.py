@@ -34,9 +34,35 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def read_image_bgr(path: Path) -> np.ndarray:
+    # Attempt to read with OpenCV first (supports JPG, PNG, etc.)
     img = cv2.imdecode(np.fromfile(str(path), dtype=np.uint8), cv2.IMREAD_COLOR)
+    
     if img is None:
-        raise ValueError(f"Could not read image: {path}")
+        ext = path.suffix.lower()
+        # Fallback for RAW files (DNG, etc.)
+        if ext in {".dng", ".tiff", ".tif"}:
+            try:
+                import rawpy
+                with rawpy.imread(str(path)) as raw:
+                    rgb = raw.postprocess()
+                    img = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+            except Exception:
+                pass # Try PIL if rawpy fails
+
+        # Fallback to PIL for HEIC and others
+        if img is None:
+            try:
+                from PIL import Image
+                import pillow_heif
+                pillow_heif.register_heif_opener()
+                pil_img = Image.open(path)
+                # Convert PIL RGB to OpenCV BGR
+                img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+            except Exception as e:
+                raise ValueError(f"Could not read image {path}: {e}")
+            
+    if img is None:
+        raise ValueError(f"Could not read image: {path} (Unknown format/Corrupted)")
     return img
 
 

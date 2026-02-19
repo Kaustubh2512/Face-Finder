@@ -10,3 +10,8 @@ onnxruntime
 
 # UI
 streamlit
+
+# Image support for HEIC/RAW
+pillow
+pillow-heif
+rawpy
