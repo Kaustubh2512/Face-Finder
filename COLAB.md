@@ -45,8 +45,8 @@ If the photos are in a shared link, you must add a shortcut to your own Drive:
 
 1.  **Mount Drive**: Run the first cell and authorize Google Drive access(first run button).
 2.  **Install Libraries**: Run the setup cell. This will install the AI models and GPU drivers.
-3.  **Set Paths**: Update the `KNOWN_FACES` and `EVENT_PHOTOS` variables in the config cell to match your Drive paths by clicking 3 dots and copying the path.
-   ![folder path guide] (docs/images/folder_path.png)
+3.  **Set Paths**: Update the `KNOWN_FACES` and `EVENT_PHOTOS` variables in the config cell to match your Drive paths. You can find the path by clicking the 3 dots on a folder in the Colab sidebar and selecting "Copy path".
+    ![folder path guide](docs/images/folder_path.png)
 4.  **Process**: Run the final cell.
 
 
