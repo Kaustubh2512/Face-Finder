@@ -10,7 +10,7 @@ This guide explains how to use Face Finder in the cloud to process event photos 
 - Click **File > Upload notebook** and select the file.
 
 ### 2. Enable GPU (Critical for Speed)
-To process 1000s of photos in minutes:
+To process 100s of photos in minutes:
 - Go to **Runtime > Change runtime type**.
 - Select **T4 GPU** (or any available GPU).
 - Click **Save**.
@@ -18,14 +18,17 @@ To process 1000s of photos in minutes:
 ### 3. Prepare your Folders
 Ensure your Google Drive has the following structure:
 - `Known/`: A folder containing high-quality photos of the people you want to find. (Can be subfolders per person or just named images).
-- `Event_Photos/`: The folder containing all the photos from your event/trek.
+- `Event_Photos/`: The folder containing all the photos from your event.
 
-#### 💡 If the Event Photos are in a Shared Link:
-If someone shared a drive link with you (and it's not in your Drive):
-1.  Open the Shared Link in your browser.
-2.  Click the **"Add shortcut to Drive"** icon (or right-click the folder > "Organize" > "Add shortcut").
-3.  Choose a location in your **"My Drive"**.
-4.  Now, Colab will be able to "see" those photos as if they were your own!
+#### 💡 How to use a Shared Folder (Shared Link):
+If the photos are in a shared link from someone else, you must add them to your own Drive for Colab to see them:
+1.  **Open the Link**: Open the Google Drive shared link in your browser.
+2.  **Add Shortcut**: 
+    - Click the folder name at the top.
+    - Select **Organize** > **Add shortcut**.
+    - Choose **My Drive** as the destination.
+3.  **Confirm**: Go to your [Google Drive](https://drive.google.com/) and verify the folder appears with a small "arrow" icon.
+4.  **Colab Path**: In the notebook, your path will now be `/content/drive/MyDrive/YOUR_SHORTCUT_NAME`.
 
 ## 🏃‍♂️ Running the Tool
 

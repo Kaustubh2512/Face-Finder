@@ -2,13 +2,18 @@
 
 Face Finder is a high-performance, AI-powered tool for identifying and matching faces in large collections of event photos against a set of known individuals. It is designed to automate the process of sorting photos for groups, trek teams, or event attendees.
 
-## 🚀 Key Features
-- **High-Speed Processing**: Optimized with `onnxruntime-gpu` for 10x faster scanning.
-- **Fast Mode**: Option to run at lower resolutions for 2-3x additional speedup.
-- **Automatic Sorting**: Automatically creates folders for each identified person.
-- **Flexible Inputs**: Supports both structured folders and direct images as references.
-- **Cloud Ready**: Run directly in Google Colab to avoid using local storage.
-- **Interactive UI**: Built-in Streamlit dashboard for local use.
+## 🖼️ Supported Formats
+- **Standard**: `.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`
+- **iPhone**: `.heic`, `.heif`
+- **DSLR/High-Res**: `.tiff`, `.tif`, `.dng`
+
+---
+
+## 🛠️ How to Select Paths (Local)
+If you are running the UI locally and need to select a folder:
+- **macOS**: Right-click the folder in Finder -> Hold **Option (⌥)** -> Select **"Copy [Folder] as Pathname"**.
+- **Windows**: Right-click the folder in File Explorer -> Select **"Copy as path"**.
+- **Paste** the copied path into the text boxes in the Streamlit UI.
 
 ---
 

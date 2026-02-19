@@ -17,7 +17,7 @@ except Exception as e:
         "Failed to import insightface. Install with: pip install insightface onnxruntime"
     ) from e
 
-IMG_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
+IMG_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".heic", ".heif", ".tiff", ".tif", ".dng"}
 
 
 def is_image(p: Path) -> bool:
