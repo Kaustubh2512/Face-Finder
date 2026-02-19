@@ -2,7 +2,7 @@
 
 This guide explains how to use Face Finder in the cloud to process event photos stored on Google Drive.
 
-## 🚀 Setup Steps
+##  Setup Steps
 
 ### 1. Upload the Notebook
 - Download `Face_Finder_Colab.ipynb` from this repository.
@@ -28,7 +28,7 @@ Ensure your Google Drive has the following structure:
 - `Known/`: Reference photos.
 - `Event_Photos/`: Photos to scan.
 
-#### 💡 How to use a Shared Folder (Shared Link):
+####  How to use a Shared Folder (Shared Link):
 If the photos are in a shared link, you must add a shortcut to your own Drive:
 1.  **Open the Shared Link** in your browser.
 2.  **Right-Click** the folder name or click the 3 dots.
@@ -37,6 +37,7 @@ If the photos are in a shared link, you must add a shortcut to your own Drive:
 4.  Choose **My Drive** as the destination.
 
 ![Add Shortcut Guide](docs/images/add_shortcut.png)
+![Add Shortcut Guide destination](docs/images/add_shortcut_destination.png)
 3.  **Confirm**: Go to your [Google Drive](https://drive.google.com/) and verify the folder appears with a small "arrow" icon.
 4.  **Colab Path**: In the notebook, your path will now be `/content/drive/MyDrive/YOUR_SHORTCUT_NAME`.
 
@@ -47,13 +48,6 @@ If the photos are in a shared link, you must add a shortcut to your own Drive:
 3.  **Set Paths**: Update the `KNOWN_FACES` and `EVENT_PHOTOS` variables in the config cell to match your Drive paths.
 4.  **Process**: Run the final cell.
 
-## 👥 Sharing Results with a Group
-Face Finder automatically sorts photos into individual folders.
-
-1.  Navigate to your `Output/per_person/` folder in Google Drive.
-2.  Select the folder, click **Share**, and set it to **"Anyone with the link can view"**.
-3.  Send the link to your group (e.g., on WhatsApp/Slack).
-4.  **Bonus**: Group members can simply open their named folder and download their personal set of photos without seeing everyone else's.
 
 ## ⚙️ Troubleshooting
 - **No faces found**: Ensure your "Known" photos are clear and front-facing.
