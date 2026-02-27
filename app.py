@@ -66,8 +66,8 @@ with st.sidebar:
     st.divider()
     
     st.subheader("Fine-tuning")
-    threshold = st.slider("Match Threshold", 0.0, 1.0, 0.35, 0.05, help="Lower = more matches, Higher = more accurate")
-    min_face = st.number_input("Min Face Size (px)", value=60, step=10)
+    threshold = st.slider("Match Threshold", 0.0, 1.0, 0.45, 0.05, help="Lower = more matches, Higher = more accurate")
+    min_face = st.number_input("Min Face Size (px)", value=40, step=10)
 
     st.divider()
     

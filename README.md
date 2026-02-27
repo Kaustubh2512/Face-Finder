@@ -1,21 +1,41 @@
-# 👤 Face Finder
+# Face Finder
 
 Face Finder is a high-performance, AI-powered tool for identifying and matching faces in large collections of event photos against a set of known individuals. It is designed to automate the process of sorting photos for groups, trek teams, or event attendees.
 
-## 🖼️ Supported Formats
+## 🛠️ Choose Your Workflow
+
+You can use Face Finder in two ways:
+
+### 1. ☁️ **Cloud Mode (Recommended)**
+**Best for:** Processing large events without using your local computer or storage.
+- **No local files needed**: Everything runs in Google Colab using your Google Drive.
+- **High Performance**: Uses free cloud GPUs for maximum speed.
+- **Easy Sharing**: Sorted folders are ready to share directly via Google Drive links.
+- 👉 **[Read the Google Colab Guide (COLAB.md)](COLAB.md)**
+
+### 2. 💻 **Local Mode**
+**Best for:** Personal use or when you already have photos on your hard drive.
+- **Local Files**: Requires "Known" and "Event" photos to be on your computer (No cloud storage needed).
+- **Privacy**: No photos are uploaded to the cloud.
+- **Interactive UI**: Comes with a built-in Streamlit dashboard.
+- 👉 **[See Local Installation](#-local-installation)**
+
+## Supported Formats
 - **Standard**: `.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`
 - **iPhone**: `.heic`, `.heif`
 - **DSLR/High-Res**: `.tiff`, `.tif`, `.dng`
 
 ---
 
-## 🛠️ How to Select Paths (Local)
+##  How to Select Paths (Local)
 If you are running the UI locally and need to select a folder:
 - **macOS**: Right-click the folder in Finder -> Hold **Option (⌥)** -> Select **"Copy [Folder] as Pathname"**.
 - **Windows**: Right-click the folder in File Explorer -> Select **"Copy as path"**.
 - **Paste** the copied path into the text boxes in the Streamlit UI.
 
 ---
+
+![Face Finder Dashboard](docs/images/streamlit_preview.png)
 
 ## ☁️ Running in Google Colab (Recommended)
 The fastest way to use Face Finder without installing anything on your computer.
@@ -34,7 +54,7 @@ Once the processing is finished:
 
 ---
 
-## 💻 Local Installation
+##  Local Installation
 
 ### Prerequisites
 - Python 3.8+

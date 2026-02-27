@@ -252,9 +252,9 @@ def main():
     parser.add_argument("--known", type=str, default="Known", help="Directory containing folders of known individuals")
     parser.add_argument("--photos", type=str, default="Event Photos", help="Directory containing event photos to scan")
     parser.add_argument("--output", type=str, default="output", help="Directory to save results")
-    parser.add_argument("--threshold", type=float, default=0.35, help="Cosine similarity threshold (default: 0.35)")
+    parser.add_argument("--threshold", type=float, default=0.45, help="Cosine similarity threshold (default: 0.45)")
     parser.add_argument("--det-size", type=int, default=640, help="Detection size for the face model (default: 640)")
-    parser.add_argument("--min-face", type=int, default=60, help="Minimum face size in pixels (default: 60)")
+    parser.add_argument("--min-face", type=int, default=40, help="Minimum face size in pixels (default: 40)")
     parser.add_argument("--use-gpu", action="store_true", help="Use GPU acceleration if available")
 
     args = parser.parse_args()
